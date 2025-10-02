@@ -59,7 +59,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "music-theory-agent=agent_pipeline_optimized_9.14:main",
+            "music-theory-agent=agent_pipeline_optimized:main",
         ],
     },
     include_package_data=True,

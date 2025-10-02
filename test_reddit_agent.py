@@ -35,7 +35,7 @@ def format_question_with_options(question, final_options):
     
     return formatted_question
 
-def test_reddit_questions(csv_path="reddit_data_combined_final.csv", kern_folder="kern_reddit_new", pipeline="agent_pipeline_optimized_9.14.py", start_from=1):
+def test_reddit_questions(csv_path="reddit_data_combined_final.csv", kern_folder="kern_reddit_new", pipeline="agent_pipeline_optimized.py", start_from=1):
     """Test questions in reddit format starting from a specific question number"""
     
     # Load the CSV
@@ -142,7 +142,7 @@ if __name__ == "__main__":
     
     import argparse
     ap = argparse.ArgumentParser()
-    ap.add_argument("--pipeline", type=str, default="agent_pipeline_optimized_9.14.py", help="Pipeline script to run for each question")
+    ap.add_argument("--pipeline", type=str, default="agent_pipeline_optimized.py", help="Pipeline script to run for each question")
     ap.add_argument("--csv", type=str, default="reddit_data_combined_final.csv")
     ap.add_argument("--kern", type=str, default="kern_reddit_new")
     ap.add_argument("--start_from", type=int, default=1, help="Start testing from this question ID")

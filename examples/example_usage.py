@@ -10,7 +10,7 @@ import sys
 # Add the parent directory to the path so we can import the agent
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from agent_pipeline_optimized_9.14 import run_episode
+from agent_pipeline_optimized import run_episode
 
 def main():
     """Example of running the agent on a single question."""
