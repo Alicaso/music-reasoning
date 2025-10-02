@@ -170,19 +170,6 @@ The system processes musical scores in Humdrum/Kern format, which is a text-base
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Citation
-
-If you use this project in your research, please cite:
-
-```bibtex
-@software{music_theory_ai_agent,
-  title={Music Theory AI Agent: A Multi-Agent System for Automated Music Analysis},
-  author={Alicaso},
-  year={2024},
-  url={https://github.com/Alicaso/music-reasoning}
-}
-```
-
 ## Acknowledgments
 
 - Built with [music21](https://web.mit.edu/music21/) for music analysis
