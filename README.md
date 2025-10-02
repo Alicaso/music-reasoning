@@ -95,20 +95,20 @@ python test_exam_multi_model.py
 - `QUESTIONS_CSV_PATH`: Path to questions CSV file
 - `KERN_FOLDER`: Path to Kern notation files
 - `OPENAI_API_KEY`: OpenAI API key
-- `PLANNER_MODEL`: Model for planner agent (default: gpt-4o-mini)
-- `THINKER_MODEL`: Model for thinker agent (default: gpt-4o-mini)
-- `TOOLER_MODEL`: Model for tool-user agent (default: gpt-4o-mini)
-- `REVIEWER_MODEL`: Model for reviewer agent (default: gpt-4o-mini)
+- `PLANNER_MODEL`: Model for planner agent (default: gpt-4.1-mini)
+- `THINKER_MODEL`: Model for thinker agent (default: gpt-4.1-mini)
+- `TOOLER_MODEL`: Model for tool-user agent (default: gpt-4.1-mini)
+- `REVIEWER_MODEL`: Model for reviewer agent (default: gpt-4.1-mini)
 
 ### Model Configuration
 
 You can use different GPT models for different components:
 
 ```bash
-export PLANNER_MODEL="gpt-4o"
-export THINKER_MODEL="gpt-4o-mini"
-export TOOLER_MODEL="gpt-4o-mini"
-export REVIEWER_MODEL="gpt-4o"
+export PLANNER_MODEL="gpt-4.1-mini"
+export THINKER_MODEL="gpt-4.1-mini"
+export TOOLER_MODEL="gpt-4.1-mini"
+export REVIEWER_MODEL="gpt-4.1-mini"
 ```
 
 ## Project Structure
