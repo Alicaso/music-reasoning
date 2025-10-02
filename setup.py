@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Setup script for Music Theory AI Agent
+Setup script for Music Reasoning AI Agent
 """
 
 from setuptools import setup, find_packages
@@ -18,14 +18,14 @@ def read_requirements():
         return [line.strip() for line in fh if line.strip() and not line.startswith("#")]
 
 setup(
-    name="music-theory-ai-agent",
+    name="music-reasoning-ai-agent",
     version="1.0.0",
-    author="Music Theory AI Team",
+    author="Alicaso",
     author_email="your.email@example.com",
-    description="A sophisticated multi-agent system for automated music theory analysis",
+    description="A sophisticated multi-agent system for automated music reasoning analysis",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/music-theory-ai-agent",
+    url="https://github.com/Alicaso/music-reasoning",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -59,7 +59,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "music-theory-agent=agent_pipeline_optimized:main",
+            "music-reasoning-agent=agent_pipeline_optimized:main",
         ],
     },
     include_package_data=True,
@@ -67,10 +67,10 @@ setup(
         "": ["*.yaml", "*.yml", "*.json"],
     },
     zip_safe=False,
-    keywords="music theory, ai, machine learning, symbolic music, analysis, education",
+    keywords="music reasoning, ai, machine learning, symbolic music, analysis, education",
     project_urls={
-        "Bug Reports": "https://github.com/yourusername/music-theory-ai-agent/issues",
-        "Source": "https://github.com/yourusername/music-theory-ai-agent",
-        "Documentation": "https://github.com/yourusername/music-theory-ai-agent#readme",
+        "Bug Reports": "https://github.com/Alicaso/music-reasoning/issues",
+        "Source": "https://github.com/Alicaso/music-reasoning",
+        "Documentation": "https://github.com/Alicaso/music-reasoning#readme",
     },
 )

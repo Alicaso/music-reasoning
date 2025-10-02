@@ -1,15 +1,15 @@
-# Music Theory AI Agent
+# Music Reasoning AI Agent
 
-A sophisticated multi-agent system for automated music theory analysis and question answering using symbolic music notation (Humdrum/Kern format).
+A sophisticated multi-agent system for automated music reasoning analysis and question answering using symbolic music notation (Humdrum/Kern format).
 
 ## Overview
 
-This project implements an advanced AI agent pipeline that can analyze musical scores and answer complex music theory questions. The system uses a multi-agent architecture with specialized components for planning, reasoning, tool execution, and review.
+This project implements an advanced AI agent pipeline that can analyze musical scores and answer complex music reasoning questions. The system uses a multi-agent architecture with specialized components for planning, reasoning, tool execution, and review.
 
 ## Features
 
 - **Multi-Agent Architecture**: Planner → Thinker/Tool-User Loop → Reviewer
-- **Comprehensive Music Analysis**: 16 specialized tools for music theory analysis
+- **Comprehensive Music Analysis**: 16 specialized tools for music reasoning analysis
 - **Symbolic Music Processing**: Full support for Humdrum/Kern notation format
 - **Advanced Reasoning**: ReAct-style reasoning with tool calling capabilities
 - **GPT Model Support**: Compatible with OpenAI GPT models
@@ -20,7 +20,7 @@ This project implements an advanced AI agent pipeline that can analyze musical s
 
 ### Core Components
 
-1. **Planner Agent**: Creates strategic analysis plans for music theory questions
+1. **Planner Agent**: Creates strategic analysis plans for music reasoning questions
 2. **Thinker Agent**: Performs reasoning and decides when to use tools
 3. **Tool-User Agent**: Executes specific music analysis tools with proper parameters
 4. **Reviewer Agent**: Makes final decisions based on all gathered information
@@ -145,7 +145,7 @@ music-reasoning/
 The system expects CSV files with the following columns:
 - `question_id`: Unique identifier
 - `music_id`: Identifier for the corresponding Kern file
-- `question`: The music theory question
+- `question`: The music reasoning question
 - `final_options`: List of answer choices (A, B, C, D)
 - `truth_letter`: Correct answer (A, B, C, or D)
 
