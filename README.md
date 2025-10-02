@@ -12,7 +12,7 @@ This project implements an advanced AI agent pipeline that can analyze musical s
 - **Comprehensive Music Analysis**: 16 specialized tools for music theory analysis
 - **Symbolic Music Processing**: Full support for Humdrum/Kern notation format
 - **Advanced Reasoning**: ReAct-style reasoning with tool calling capabilities
-- **Multiple Model Support**: Compatible with OpenAI, Claude, Gemini, and other LLMs
+- **GPT Model Support**: Compatible with OpenAI GPT models
 - **Structured Validation**: JSON Schema validation for tool parameters
 - **Error Handling**: Robust error handling and retry mechanisms
 
@@ -59,9 +59,6 @@ pip install -r requirements.txt
 3. Set up environment variables:
 ```bash
 export OPENAI_API_KEY="your-openai-api-key"
-# Or for other models:
-export ANTHROPIC_API_KEY="your-claude-api-key"
-export GEMINI_API_KEY="your-gemini-api-key"
 ```
 
 ## Usage
@@ -98,20 +95,18 @@ python test_exam_multi_model.py
 - `QUESTIONS_CSV_PATH`: Path to questions CSV file
 - `KERN_FOLDER`: Path to Kern notation files
 - `OPENAI_API_KEY`: OpenAI API key
-- `ANTHROPIC_API_KEY`: Claude API key
-- `GEMINI_API_KEY`: Gemini API key
 - `PLANNER_MODEL`: Model for planner agent (default: gpt-4o-mini)
 - `THINKER_MODEL`: Model for thinker agent (default: gpt-4o-mini)
 - `TOOLER_MODEL`: Model for tool-user agent (default: gpt-4o-mini)
-- `REVIEWER_MODEL`: Model for reviewer agent
+- `REVIEWER_MODEL`: Model for reviewer agent (default: gpt-4o-mini)
 
 ### Model Configuration
 
-You can use different models for different components:
+You can use different GPT models for different components:
 
 ```bash
 export PLANNER_MODEL="gpt-4o"
-export THINKER_MODEL="claude-3-5-sonnet-20241022"
+export THINKER_MODEL="gpt-4o-mini"
 export TOOLER_MODEL="gpt-4o-mini"
 export REVIEWER_MODEL="gpt-4o"
 ```
