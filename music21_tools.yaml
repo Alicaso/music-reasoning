@@ -1,0 +1,924 @@
+- tool_name: search_music_concept
+  brief_description: Search for music theory concepts and definitions online. Use when encountering unfamiliar musical terms.
+  description: "Search for music theory concepts, terms, or definitions using DuckDuckGo. Helps the agent understand unfamiliar music concepts by providing concise explanations and definitions. Particularly useful for specialized terminology or theoretical concepts encountered during analysis. If have some concepts unknown or unformiliar, please use this tool! *Search keywords should be short, strictly limited to 1-3 words. Search for only one concept at a time.*"
+  arguments:
+  - name: query
+    type: string
+    description: A brief description of the music concept to search for. Should be short but specific.
+  returns:
+    type: string
+    description: A concise explanation of the searched music concept, or an error message if the search fails.
+  examples:
+  - plagal_cadence: "Search result for 'plagal cadence': A plagal cadence is a harmonic progression that moves from the subdominant (IV) to the tonic (I) chord, commonly known as the 'Amen' cadence..."
+  - augmented_sixth: "Search result for 'augmented sixth chord': Augmented sixth chords are dissonant chords built on the flattened sixth degree, typically resolving outward by semitone to the dominant..."
+  - sonata_form: "Search result for 'sonata form': Sonata form is a musical structure consisting of three main sections: exposition, development, and recapitulation..."
+  - error: "Error: No relevant information found for 'xyz concept'. Try rephrasing your search query."
+  args_schema:
+    type: object
+    required:
+    - query
+    properties:
+      query:
+        type: string
+        description: A brief description of the music concept to search for. Should be short but specific.
+        minLength: 3
+        maxLength: 100
+  returns_schema:
+    type: object
+    required:
+    - ok
+    - data
+    properties:
+      ok:
+        type: boolean
+        description: Whether the operation was successful.
+      data:
+        type: string
+        description: The search result or error message.
+- tool_name: get_pitch_classes_in_segment
+  brief_description: Get all unique pitch classes (note names) in a specific segment.
+  description: Finds all unique pitch classes (the 'note palette') within a specific musical segment  (defined by a mandatory part index and measure range). Returns a natural language  sentence listing the note names (e.g., 'C', 'C#') mapped from integers (0-11).
+  arguments:
+  - name: kern_data
+    type: string
+    description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+  - name: part_index
+    type: integer
+    description: The mandatory 0-based index of the specific part to analyze (e.g., 0 for the  first part, 1 for the second).
+  - name: measure_start
+    type: integer
+    description: The starting measure number of the segment to analyze (inclusive).
+  - name: measure_end
+    type: integer
+    description: The ending measure number of the segment to analyze (inclusive).
+  returns:
+    type: string
+    description: 'A single natural language sentence describing the result or error. Example of success: "The pitch classes found in Part 0 from measure 1 to 2 are: [C, D, E, F#, G, A, B]." Example of empty: "No pitch classes (notes) were found in Part 0 from measure 1 to 2." Example of error: "Error: Invalid part_index: 5. Score only has 2 parts (indexed 0 to 1)."'
+  args_schema:
+    type: object
+    required:
+    - kern_data
+    - part_index
+    - measure_start
+    - measure_end
+    properties:
+      kern_data:
+        type: string
+        description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+        minLength: 1
+      part_index:
+        type: integer
+        description: The mandatory 0-based index of the specific part to analyze (e.g., 0 for the  first part, 1 for the second).
+        minimum: 0
+      measure_start:
+        type: integer
+        description: The starting measure number of the segment to analyze (inclusive).
+        minimum: 1
+      measure_end:
+        type: integer
+        description: The ending measure number of the segment to analyze (inclusive).
+        minimum: 1
+  returns_schema:
+    type: object
+    required:
+    - ok
+    - data
+    properties:
+      ok:
+        type: boolean
+        description: Whether the operation was successful.
+      data:
+        type: string
+        description: The result data or error message.
+- tool_name: get_interval_between_two_events
+  brief_description: Calculate the interval between two specific musical events. Use for melodic or harmonic interval analysis.
+  description: 'Calculates the precise directed interval between two specific events (Notes or Chords) located anywhere in the score. Each event MUST be specified using its 3-part coordinate:  (part_index, measure_number, event_index). This tool is for point-to-point comparison. The ''event_index'' is the 0-based count of NOTE/CHORD objects within that measure (rests are ignored). If an event is a chord, its lowest (bass) note is automatically used.'
+  arguments:
+  - name: kern_data
+    type: string
+    description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+  - name: part_a_index
+    type: integer
+    description: The 0-based part index for Event A (e.g., 0 for the first part).
+  - name: measure_a_num
+    type: integer
+    description: The literal measure number for Event A (e.g., 5 for measure 5).
+  - name: event_a_index
+    type: integer
+    description: The 0-based index of the note/chord *within* measure_a_num (e.g., 0 for the first note).
+  - name: part_b_index
+    type: integer
+    description: The 0-based part index for Event B.
+  - name: measure_b_num
+    type: integer
+    description: The literal measure number for Event B.
+  - name: event_b_index
+    type: integer
+    description: The 0-based index of the note/chord *within* measure_b_num.
+  returns:
+    type: string
+    description: 'A single natural language sentence summarizing the interval (name, direction, semitones) or a specific error. Success Example (ascending): "The interval from Event A (P0, M5, E0) to Event B (P3, M5, E0) is a P19 (ascending), with a distance of 29 semitones." Success Example (descending): "The interval from Event A (P0, M1, E0) to Event B (P0, M1, E1) is a m3 (descending), with a distance of -3 semitones." Error Example (bad event index): "Error (Event A): Invalid event_index: 5. Measure 5 only has 4 note/chord events (indexed 0 to 3)." Error Example (bad measure num): "Error (Event B): Measure 99 not found in Part 0."'
+  args_schema:
+    type: object
+    required:
+    - kern_data
+    - part_a_index
+    - measure_a_num
+    - event_a_index
+    - part_b_index
+    - measure_b_num
+    - event_b_index
+    properties:
+      kern_data:
+        type: string
+        description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+        minLength: 1
+      part_a_index:
+        type: integer
+        description: The 0-based part index for Event A (e.g., 0 for the first part).
+        minimum: 0
+      measure_a_num:
+        type: integer
+        description: The literal measure number for Event A (e.g., 5 for measure 5).
+        minimum: 1
+      event_a_index:
+        type: integer
+        description: The 0-based index of the note/chord *within* measure_a_num (e.g., 0 for the first note).
+        minimum: 0
+      part_b_index:
+        type: integer
+        description: The 0-based part index for Event B.
+        minimum: 0
+      measure_b_num:
+        type: integer
+        description: The literal measure number for Event B.
+        minimum: 1
+      event_b_index:
+        type: integer
+        description: The 0-based index of the note/chord *within* measure_b_num.
+        minimum: 0
+  returns_schema:
+    type: object
+    required:
+    - ok
+    - data
+    properties:
+      ok:
+        type: boolean
+        description: Whether the operation was successful.
+      data:
+        type: string
+        description: The result data or error message.
+- tool_name: get_chord_root_at_event
+  brief_description: Get the root note of a chord at a specific event (single Note or Chord).
+  description: Finds the conceptual 'Root' of a specific musical event (Note or Chord), identified  by its 3-part coordinate (part, measure, event_index). This tool identifies the  chord's name identity, regardless of its inversion. This is DIFFERENT from the 'bass note'  (which is just the lowest sounding note). If the event is a single Note, it returns that note's pitch as the root. This tool only applies when a SINGLE, precise event is specified by its (part_index, measure_num, event_index). It cannot be used with only a measure range or an imprecise location. If you only know a measure (or broader span), use get_chord_progression_in_segment is appropriate.'
+  arguments:
+  - name: kern_data
+    type: string
+    description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+  - name: part_index
+    type: integer
+    description: The 0-based part index for the event (e.g., 0 for the first part).
+  - name: measure_num
+    type: integer
+    description: The literal measure number for the event (e.g., 5 for measure 5).
+  - name: event_index
+    type: integer
+    description: The 0-based index of the note/chord *within* that measure (e.g., 0 for the first note).
+  returns:
+    type: string
+    description: 'A natural language sentence identifying the calculated Root, or a specific error. Chord Success Example (Inversion): "Event (P0, M1, E0) is a Chord. The calculated conceptual root is: C." Note Success Example: "Event (P1, M2, E1) is a single Note. Its pitch (and root) is: F#." Error Example: "Error (Event): Invalid event_index: 5. Measure 5 only has 4 note/chord events (indexed 0 to 3)."'
+  args_schema:
+    type: object
+    required:
+    - kern_data
+    - part_index
+    - measure_num
+    - event_index
+    properties:
+      kern_data:
+        type: string
+        description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+        minLength: 1
+      part_index:
+        type: integer
+        description: The 0-based part index for the event (e.g., 0 for the first part).
+        minimum: 0
+      measure_num:
+        type: integer
+        description: The literal measure number for the event (e.g., 5 for measure 5).
+        minimum: 1
+      event_index:
+        type: integer
+        description: The 0-based index of the note/chord *within* that measure (e.g., 0 for the first note).
+        minimum: 0
+  returns_schema:
+    type: object
+    required:
+    - ok
+    - data
+    properties:
+      ok:
+        type: boolean
+        description: Whether the operation was successful.
+      data:
+        type: string
+        description: The result data or error message.
+- tool_name: get_chord_progression_in_segment
+  brief_description: Analyze chord progression in a segment.
+  description: Analyzes a segment's full harmony (all parts combined) and returns its chord progression. Full chords are named (e.g., 'Am', 'G7'). Monophonic (single-note) passages are  represented by their note name (e.g., 'C'). Complex multi-note clusters that cannot  be named are marked '(Unnamable)'. Events within a measure are separated by ", " (comma-space).
+  arguments:
+  - name: kern_data
+    type: string
+    description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+  - name: measure_start
+    type: integer
+    description: The starting measure number of the segment to analyze (inclusive).
+  - name: measure_end
+    type: integer
+    description: The ending measure number of the segment to analyze (inclusive).
+  returns:
+    type: string
+    description: A natural language sentence followed by the lead-sheet string, or an error message.
+    examples:
+    - success (full chords): 'Chord progression for measures 1-2: | C, G | Am, G7 |'
+    - success (melody): 'Chord progression for measures 1-2: | C, D, E, F | G, A, B, C |'
+    - success (mixed): 'Chord progression for measures 1-2: | G, (Unnamable) | C |'
+    - empty: No chords or notes could be identified in the specified segment (M 1-2).
+  args_schema:
+    type: object
+    required:
+    - kern_data
+    - measure_start
+    - measure_end
+    properties:
+      kern_data:
+        type: string
+        description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+        minLength: 1
+      measure_start:
+        type: integer
+        description: The starting measure number of the segment to analyze (inclusive).
+        minimum: 1
+      measure_end:
+        type: integer
+        description: The ending measure number of the segment to analyze (inclusive).
+        minimum: 1
+  returns_schema:
+    type: object
+    required:
+    - ok
+    - data
+    properties:
+      ok:
+        type: boolean
+        description: Whether the operation was successful.
+      data:
+        type: string
+        description: The result data or error message.
+- tool_name: get_roman_numeral_analysis_in_segment
+  brief_description: Perform Roman numeral analysis of a given segment. Use for functional harmonic analysis.
+  description: Performs Roman numeral analysis over a measure segment on the FULL score (all parts combined). The score is chordified first; each resulting chord is analyzed against a provided key. Unanalyzable textures (single notes, dyads, complex clusters) are marked as '(Complex/Ambiguous)'. Before you use this tool, make sure you know the key.
+  arguments:
+  - name: kern_data
+    type: string
+    description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+  - name: measure_start
+    type: integer
+    description: The starting measure number of the segment to analyze (inclusive).
+  - name: measure_end
+    type: integer
+    description: The ending measure number of the segment to analyze (inclusive).
+  - name: key_string
+    type: string
+    description: The key context for the analysis. Use UPPERCASE for major (e.g., 'C', 'Bb', 'F#') and lowercase for minor (e.g., 'am', 'cm', 'g#').
+  returns:
+    type: string
+    description: A natural language sentence followed by a lead-sheet style barline string of Roman numerals per measure.
+    examples:
+    - success: 'Roman numeral analysis in C major for measures 1-2: | I, V | vi, IV |'
+    - complex: 'Roman numeral analysis in a minor for measures 3-4: | (Complex/Ambiguous) | i, V |'
+    - empty: No chords or notes could be identified in the specified segment (M 10-12) for analysis.
+    - error_bad_key: 'Error: Invalid key_string provided: "F Major" (Hint: use "F"). Music21 could not parse it. Use format like "C", "Bb", "cm", "g#".'
+  args_schema:
+    type: object
+    required:
+    - kern_data
+    - measure_start
+    - measure_end
+    - key_string
+    properties:
+      kern_data:
+        type: string
+        description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+        minLength: 1
+      measure_start:
+        type: integer
+        description: The starting measure number of the segment to analyze (inclusive).
+        minimum: 1
+      measure_end:
+        type: integer
+        description: The ending measure number of the segment to analyze (inclusive).
+        minimum: 1
+      key_string:
+        type: string
+        description: The key context for the analysis. Use UPPERCASE for major (e.g., 'C', 'Bb', 'F#') and lowercase for minor (e.g., 'am', 'cm', 'g#').
+        minLength: 1
+        pattern: ^[A-Ga-g][#b]?[m]?$
+  returns_schema:
+    type: object
+    required:
+    - ok
+    - data
+    properties:
+      ok:
+        type: boolean
+        description: Whether the operation was successful.
+      data:
+        type: string
+        description: The result data or error message.
+- tool_name: get_melodic_contour_of_part
+  brief_description: Extracts the melodic contour (pitch up/down movement in semitones) of a single part within a measure range.
+  description: Calculates the melodic contour for a SINGLE mandatory part within a given measure range. It returns a list of numbers representing the semitone movement (+/-) between  consecutive sounding events. This tool intelligently handles polyphony by  automatically selecting the HIGHEST pitch of any chord as the melodic note  for that timestep. It skips rests.
+  arguments:
+  - name: kern_data
+    type: string
+    description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+  - name: part_index
+    type: integer
+    description: The mandatory 0-based index of the specific part to analyze (e.g., 0 for the  first part). This tool MUST operate on a single part.
+  - name: measure_start
+    type: integer
+    description: The starting measure number of the segment to analyze (inclusive).
+  - name: measure_end
+    type: integer
+    description: The ending measure number of the segment to analyze (inclusive).
+  returns:
+    type: string
+    description: A natural language sentence summarizing the part/range, followed by the list  of semitone movements, or an error message.
+    examples:
+    - success: 'Melodic contour for Part 0 (Measures 1-4): [+2, -1, -2, 0, +4, -1]'
+    - empty: Insufficient notes (< 2) in Part 1 (M 1-2) to calculate a contour.
+    - error: 'Error: Invalid part_index: 5. Score only has 2 parts (indexed 0 to 1).'
+  args_schema:
+    type: object
+    required:
+    - kern_data
+    - part_index
+    - measure_start
+    - measure_end
+    properties:
+      kern_data:
+        type: string
+        description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+        minLength: 1
+      part_index:
+        type: integer
+        description: The mandatory 0-based index of the specific part to analyze (e.g., 0 for the  first part). This tool MUST operate on a single part.
+        minimum: 0
+      measure_start:
+        type: integer
+        description: The starting measure number of the segment to analyze (inclusive).
+        minimum: 1
+      measure_end:
+        type: integer
+        description: The ending measure number of the segment to analyze (inclusive).
+        minimum: 1
+  returns_schema:
+    type: object
+    required:
+    - ok
+    - data
+    properties:
+      ok:
+        type: boolean
+        description: Whether the operation was successful.
+      data:
+        type: string
+        description: The result data or error message.
+- tool_name: extract_all_key_signatures
+  brief_description: Extract all key signature exists in the score.
+  description: Finds and returns a complete list of ALL explicitly NOTATED key signature changes  throughout the score. It specifies the measure range for each signature.  It correctly handles pieces that start with no signature (defaulting to C major/a minor)  and then change later.
+  arguments:
+  - name: kern_data
+    type: string
+    description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+  returns:
+    type: string
+    description: A natural language report detailing the key signature(s) and their measure ranges.
+    examples:
+    - success_no_change: 'The notated key signature is: B-flat major (or g minor) (-2 sharps/flats) from beginning to end.'
+    - success_with_changes: 'A sequence of key signature changes was found: - From measure 1 to measure 24: C major (or a minor) (0 sharps/flats). - From measure 25 to the end: G major (or e minor) (1 sharps/flats).'
+    - success_late_start: 'A sequence of key signature changes was found: - From measure 1 to measure 19: No signature notated (defaults to C major (or a minor)) (0 sharps/flats). - From measure 20 to the end: D major (or b minor) (2 sharps/flats).'
+    - not_found: No key signature is explicitly notated in the score (defaults to C major / a minor).
+  args_schema:
+    type: object
+    required:
+    - kern_data
+    properties:
+      kern_data:
+        type: string
+        description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+        minLength: 1
+  returns_schema:
+    type: object
+    required:
+    - ok
+    - data
+    properties:
+      ok:
+        type: boolean
+        description: Whether the operation was successful.
+      data:
+        type: string
+        description: The result data or error message.
+- tool_name: get_key_estimation
+  brief_description: Estimate the key of a given segment.
+  description: Estimates the most probable key of the score using an algorithmic analysis  (Krumhansl-Schmuckler) of all pitches. This analyzes the sounding harmony  of all parts combined (concert pitch) to find the single, unified tonal center. It returns the estimated key AND a confidence score (correlation coefficient). You can optionally specify a measure range to analyze only a segment.
+  arguments:
+  - name: kern_data
+    type: string
+    description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+  - name: measure_start
+    type: integer
+    description: OPTIONAL. The starting measure number of the segment to analyze. If omitted (along with measure_end), the entire score is analyzed.
+    is_optional: true
+  - name: measure_end
+    type: integer
+    description: OPTIONAL. The ending measure number of the segment to analyze. If omitted  (along with measure_start), the entire score is analyzed.
+    is_optional: true
+  returns:
+    type: string
+    description: A natural language sentence reporting the highest probability key and the confidence level  (a float score where higher is more confident).
+    examples:
+    - success_full: 'Based on pitch analysis of the full score, the highest probability key is: C major. (Confidence: 0.895)'
+    - success_slice: 'Based on pitch analysis of measures 10-18, the highest probability key is: a minor. (Confidence: 0.712)'
+    - low_confidence: 'Based on pitch analysis of measures 20-24, the highest probability key is: F major. (Confidence: 0.210)'
+    - error_empty: 'Error: The specified measure range (measures 1-2) is empty or contains no notes to analyze.'
+  args_schema:
+    type: object
+    required:
+    - kern_data
+    properties:
+      kern_data:
+        type: string
+        description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+        minLength: 1
+      measure_start:
+        type: integer
+        description: OPTIONAL. The starting measure number of the segment to analyze. If omitted (along with measure_end), the entire score is analyzed.
+        minimum: 1
+      measure_end:
+        type: integer
+        description: OPTIONAL. The ending measure number of the segment to analyze. If omitted  (along with measure_start), the entire score is analyzed.
+        minimum: 1
+  returns_schema:
+    type: object
+    required:
+    - ok
+    - data
+    properties:
+      ok:
+        type: boolean
+        description: Whether the operation was successful.
+      data:
+        type: string
+        description: The result data or error message.
+- tool_name: get_windowed_key_estimation
+  brief_description: Track key changes over time using sliding window analysis.
+  description: Performs a "sliding window" key analysis on the score to track modulation.  It analyzes the TOTAL harmony (all parts combined) for each window and returns  a sequence of estimated keys and their confidence scores. The window size  and step size can be optionally specified.
+  arguments:
+  - name: kern_data
+    type: string
+    description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+  - name: window_size
+    type: integer
+    description: OPTIONAL. The size of the analysis window in measures.  Recommended default (and the function's internal default) is 4.
+    is_optional: true
+  - name: step_size
+    type: integer
+    description: OPTIONAL. How many measures to slide the window forward each step.  Default is 1 (creates an overlapping analysis).
+    is_optional: true
+  returns:
+    type: string
+    description: A natural language sentence summarizing the parameters, followed by a sequence of  all window analyses (window range, key name, and confidence score).
+    examples:
+    - success (default params): 'Key analysis sequence (Window=4, Step=1): [M.1-4: C major (Conf: 0.910)], [M.2-5: C major (Conf: 0.885)], [M.3-6: G major (Conf: 0.750)], [M.4-7: G major (Conf: 0.920)]'
+    - success (custom params): 'Key analysis sequence (Window=2, Step=2): [M.1-2: a minor (Conf: 0.650)], [M.3-4: G major (Conf: 0.810)]'
+    - error: 'Error: Score length (3 measures) is shorter than the window size (4 measures).'
+  args_schema:
+    type: object
+    required:
+    - kern_data
+    properties:
+      kern_data:
+        type: string
+        description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+        minLength: 1
+      window_size:
+        type: integer
+        description: OPTIONAL. The size of the analysis window in measures.  Recommended default (and the function's internal default) is 4.
+      step_size:
+        type: integer
+        description: OPTIONAL. How many measures to slide the window forward each step.  Default is 1 (creates an overlapping analysis).
+  returns_schema:
+    type: object
+    required:
+    - ok
+    - data
+    properties:
+      ok:
+        type: boolean
+        description: Whether the operation was successful.
+      data:
+        type: string
+        description: The result data or error message.
+- tool_name: extract_all_time_signatures
+  brief_description: Extract all time signature exists in the score.
+  description: Finds and returns a complete list of ALL explicitly NOTATED time signature changes  throughout the score (e.g., "4/4", "3/8"). It specifies the measure  range for each signature. Correctly handles pieces that start without an explicit  signature, reporting this as '(Un-notated)'.
+  arguments:
+  - name: kern_data
+    type: string
+    description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+  returns:
+    type: string
+    description: A natural language report detailing the time signature(s) and their measure ranges.
+    examples:
+    - success_no_change: 'The notated time signature is: 4/4 from beginning to end.'
+    - success_with_changes: 'A sequence of time signature changes was found: - From measure 1 to measure 32: 4/4. - From measure 33 to the end: 3/4.'
+    - success_late_start: 'A sequence of time signature changes was found: - From measure 1 to measure 15: (Un-notated). - From measure 16 to the end: 6/8.'
+    - not_found: No time signature is explicitly notated in the score.
+  args_schema:
+    type: object
+    required:
+    - kern_data
+    properties:
+      kern_data:
+        type: string
+        description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+        minLength: 1
+  returns_schema:
+    type: object
+    required:
+    - ok
+    - data
+    properties:
+      ok:
+        type: boolean
+        description: Whether the operation was successful.
+      data:
+        type: string
+        description: The result data or error message.
+- tool_name: calculate_duration_of_segment
+  brief_description: Calculate the duration of a segment between two events.
+  description: Calculates the precise total duration (in 'quarter notes') of a segment defined  by two coordinate points within a SINGLE part. The calculation spans from the  START (attack) of the Start Event *up to and including* the END (release) of the  End Event. Both events MUST be in the SAME part. To use this tool, you must make sure you know the exact event index of the start and the end.
+  arguments:
+  - name: kern_data
+    type: string
+    description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+  - name: part_index
+    type: integer
+    description: The mandatory 0-based index of the single part that contains the *entire* segment.
+  - name: start_measure_num
+    type: integer
+    description: The measure number for the Start Event.
+  - name: start_event_index
+    type: integer
+    description: The 0-based event index (note/chord) within the start measure.
+  - name: end_measure_num
+    type: integer
+    description: The measure number for the End Event.
+  - name: end_event_index
+    type: integer
+    description: The 0-based event index (note/chord) within the end measure.
+  returns:
+    type: string
+    description: A natural language sentence reporting the total duration in quarter notes. This duration  INCLUDES the durations of both the start and end events.
+    examples:
+    - success (multi-measure): 'The total duration from the start of (P0, M1, E0) to the end of (P0, M2, E3) is: 8.0 quarter notes.'
+    - success (single event): 'The total duration from the start of (P0, M1, E0) to the end of (P0, M1, E0) is: 1.0 quarter notes.'
+    - error_order: 'Error: End Event... does not occur at or after Start Event... Duration must be positive.'
+    - error_coord: 'Error (Start Event): Measure 99 not found in Part 0.'
+  args_schema:
+    type: object
+    required:
+    - kern_data
+    - part_index
+    - start_measure_num
+    - start_event_index
+    - end_measure_num
+    - end_event_index
+    properties:
+      kern_data:
+        type: string
+        description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+        minLength: 1
+      part_index:
+        type: integer
+        description: The mandatory 0-based index of the single part that contains the *entire* segment.
+        minimum: 0
+      start_measure_num:
+        type: integer
+        description: The measure number for the Start Event.
+        minimum: 1
+      start_event_index:
+        type: integer
+        description: The 0-based event index (note/chord) within the start measure.
+        minimum: 0
+      end_measure_num:
+        type: integer
+        description: The measure number for the End Event.
+        minimum: 1
+      end_event_index:
+        type: integer
+        description: The 0-based event index (note/chord) within the end measure.
+        minimum: 0
+  returns_schema:
+    type: object
+    required:
+    - ok
+    - data
+    properties:
+      ok:
+        type: boolean
+        description: Whether the operation was successful.
+      data:
+        type: string
+        description: The result data or error message.
+- tool_name: get_tuplet_statistics
+  brief_description: Count tuplet occurrences in the score. Use for analyzing rhythmic complexity.
+  description: Counts the total occurrences of each type of tuplet group (e.g., 'Triplet', 'Quintuplet')  within a specified scope. You can specify the scope by part, measure range,  or both. If no scope is provided, it analyzes the entire score.
+  arguments:
+  - name: kern_data
+    type: string
+    description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+  - name: part_index
+    type: integer
+    description: OPTIONAL. The 0-based index of a specific part to analyze. If omitted, all parts are analyzed.
+    is_optional: true
+  - name: measure_start
+    type: integer
+    description: OPTIONAL. The starting measure number of a range. Requires measure_end.
+    is_optional: true
+  - name: measure_end
+    type: integer
+    description: OPTIONAL. The ending measure number of a range. Requires measure_start.
+    is_optional: true
+  returns:
+    type: string
+    description: A natural language report listing each tuplet type found and its total count.
+    examples:
+    - success: 'Tuplet statistics for Part 0, measures 1-8: - Triplet (3-in-2): 12 occurrences - Quintuplet (5-in-4): 2 occurrences'
+    - not_found: No tuplets were found in the full score.
+    - error: 'Error: Invalid part_index: 5. Score only has 2 parts (indexed 0 to 1).'
+  args_schema:
+    type: object
+    required:
+    - kern_data
+    properties:
+      kern_data:
+        type: string
+        description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+        minLength: 1
+      part_index:
+        type: integer
+        description: OPTIONAL. The 0-based index of a specific part to analyze. If omitted, all parts are analyzed.
+        minimum: 0
+      measure_start:
+        type: integer
+        description: OPTIONAL. The starting measure number of a range. Requires measure_end.
+        minimum: 1
+      measure_end:
+        type: integer
+        description: OPTIONAL. The ending measure number of a range. Requires measure_start.
+        minimum: 1
+  returns_schema:
+    type: object
+    required:
+    - ok
+    - data
+    properties:
+      ok:
+        type: boolean
+        description: Whether the operation was successful.
+      data:
+        type: string
+        description: The result data or error message.
+- tool_name: get_articulation_statistics
+  brief_description: Count articulation markings in the score. Use for analyzing performance instructions.
+  description: Counts the total occurrences of each type of articulation (e.g., 'Staccato', 'Accent')  within a specified scope. You can specify the scope by part, measure range,  or both. If no scope is provided, it analyzes the entire score.
+  arguments:
+  - name: kern_data
+    type: string
+    description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+  - name: part_index
+    type: integer
+    description: OPTIONAL. The 0-based index of a specific part to analyze. If omitted, all parts are analyzed.
+    is_optional: true
+  - name: measure_start
+    type: integer
+    description: OPTIONAL. The starting measure number of a range. Requires measure_start.
+    is_optional: true
+  - name: measure_end
+    type: integer
+    description: OPTIONAL. The ending measure number of a range. Requires measure_start.
+    is_optional: true
+  returns:
+    type: string
+    description: A natural language report listing each articulation name found and its total count.
+    examples:
+    - success: 'Articulation statistics for the full score: - Staccato: 88 occurrences - Accent: 24 occurrences - Tenuto: 16 occurrences'
+    - not_found: No articulations were found in Part 1, measures 1-4.
+    - error: 'Error: Invalid part_index: 5. Score only has 2 parts (indexed 0 to 1).'
+  args_schema:
+    type: object
+    required:
+    - kern_data
+    properties:
+      kern_data:
+        type: string
+        description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+        minLength: 1
+      part_index:
+        type: integer
+        description: OPTIONAL. The 0-based index of a specific part to analyze. If omitted, all parts are analyzed.
+        minimum: 0
+      measure_start:
+        type: integer
+        description: OPTIONAL. The starting measure number of a range. Requires measure_start.
+        minimum: 1
+      measure_end:
+        type: integer
+        description: OPTIONAL. The ending measure number of a range. Requires measure_start.
+        minimum: 1
+  returns_schema:
+    type: object
+    required:
+    - ok
+    - data
+    properties:
+      ok:
+        type: boolean
+        description: Whether the operation was successful.
+      data:
+        type: string
+        description: The result data or error message.
+- tool_name: detect_cadence_at_measure
+  brief_description: Detect cadence type at a specific measure.
+  description: Determines cadence type at the 'phrase-end position' (strong beat prioritized) of a specified measure. Uses beatStrength to select terminal chord and scaleDegree analysis for precise classification. PAC requires V→I/i with both root position and tonic in soprano. IAC is V→I/i failing PAC conditions. HC ends on V (optionally root position). Excludes applied chords (e.g., V/ii).  Classifies PAC, IAC, HC, Plagal, Deceptive cadences, or None if no clear pattern. Before you use this tool, make sure you know the key.
+  arguments:
+  - name: kern_data
+    type: string
+    description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+  - name: measure_num
+    type: integer
+    description: The literal measure number to analyze (1-indexed).
+  - name: key_string
+    type: string
+    description: The tonic and mode, e.g., 'C', 'cm', 'Bb', 'g#'.
+  - name: strict_hc_root
+    type: boolean
+    description: OPTIONAL. Whether HC requires root position V (default False).
+    is_optional: true
+  returns:
+    type: string
+    description: |
+      Natural language sentence describing the cadence type and evidence.
+      Success Example: "Cadence at M8 in C major: PAC (V → I)"
+      Error Example: "Error: No measure 8 found in the score."
+  examples:
+  - pac: "Cadence at M8 in C major: PAC (V → I)"
+  - iac: "Cadence at M4 in a minor: IAC (V → i6)"
+  - hc: "Cadence at M2 in G major: HC (ii6 → V)"
+  - hc_v6: "Cadence at M6 in G major: HC (V → V6)"
+  - plagal: "Cadence at M16 in C major: Plagal Cadence (IV → I)"
+  - deceptive: "Cadence at M12 in D major: Deceptive Cadence (V7 → vi)"
+  - none: "Cadence at M8 in F major: None/Uncertain (#iio6b5b3 → #iio6b5b3)"
+  - error: "Error: Invalid key string 'H#'. Details: ..."
+  args_schema:
+    type: object
+    required:
+    - kern_data
+    - measure_num
+    - key_string
+    properties:
+      kern_data:
+        type: string
+        description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+        minLength: 1
+      measure_num:
+        type: integer
+        description: The literal measure number to analyze (1-indexed).
+        minimum: 1
+      key_string:
+        type: string
+        description: The tonic and mode, e.g., 'C', 'cm', 'Bb', 'g#'.
+        minLength: 1
+        pattern: '^[A-Ga-g][#b]?[m]?$'
+      strict_hc_root:
+        type: boolean
+        description: OPTIONAL. Whether HC requires root position V (default False).
+  returns_schema:
+    type: object
+    required:
+    - ok
+    - data
+    properties:
+      ok:
+        type: boolean
+        description: Whether the operation was successful.
+      data:
+        type: string
+        description: The result data or error message.
+- tool_name: get_score_structural_statistics
+  brief_description: Get comprehensive structural statistics of the entire score, including counts (parts, measures, notes),  total duration, density, ambitus, and other metrics useful for classification (like pitch variety and average note duration).
+  description: Runs a comprehensive analysis on the entire score and returns a multi-line report of its core structural properties. This includes counts (parts, measures, notes), total duration, density, full pitch range (ambitus), and other metrics useful for classification (like pitch variety and average note duration).
+  arguments:
+  - name: kern_data
+    type: string
+    description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+  returns:
+    type: string
+    description: A single string containing a multi-line (newline-separated) report of all calculated statistics, or an error.
+    examples:
+    - success: "Structural statistics for the score:\n- Total Parts: 4\n- Total Measures (Highest Number): 128\n- Total Duration: 512.0 quarter notes\n- Total Note Events (attacks): 1250\n- Note Density: 2.44 events per quarter note\n- Pitch Range (Ambitus):\n  - Lowest Note: C2\n  - Highest Note: G#6\n  - Total Span: 68 semitones\n- Pitch-Class Variety: 12 (out of 12)\n- Average Event Duration: 0.38 quarter notes\n"
+    - error: 'Error: Parsing failed. Input Kern data may be invalid or empty.'
+  args_schema:
+    type: object
+    required:
+    - kern_data
+    properties:
+      kern_data:
+        type: string
+        description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+        minLength: 1
+  returns_schema:
+    type: object
+    required:
+    - ok
+    - data
+    properties:
+      ok:
+        type: boolean
+        description: Whether the operation was successful.
+      data:
+        type: string
+        description: The result data or error message.
+- tool_name: get_all_durations_in_segment
+  brief_description: List only all quarterLength (duration) values of pitches/chords in a given measure range for a single part
+  description: Extracts the sequence of duration values (quarterLength) for all events (notes and rests) in a SINGLE specified part over a given measure range. Returns a lead-sheet style string that preserves measure boundaries using barlines "|". Useful for spotting rhythmic patterns without pitch information.
+  arguments:
+  - name: kern_data
+    type: string
+    description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+  - name: part_index
+    type: integer
+    description: The mandatory 0-based index of the specific part to analyze (e.g., 0 for the first part).
+  - name: measure_start
+    type: integer
+    description: The starting measure number of the segment to analyze (inclusive).
+  - name: measure_end
+    type: integer
+    description: The ending measure number of the segment to analyze (inclusive).
+  returns:
+    type: string
+    description: A natural language sentence plus a bar-delimited string of quarterLength values per measure, or an error message.
+    examples:
+    - success: 'Durations (quarterLength) for Part 0 (Measures 1-2): | 1, 0.5, 0.5 | 0.75, 0.25 |'
+    - empty_range: 'Error: The specified measure range (Part 0, M 10-12) is empty or invalid.'
+  args_schema:
+    type: object
+    required:
+    - kern_data
+    - part_index
+    - measure_start
+    - measure_end
+    properties:
+      kern_data:
+        type: string
+        description: The FULL musical score provided as a single raw Humdrum/Kern data string.
+        minLength: 1
+      part_index:
+        type: integer
+        description: The mandatory 0-based index of the specific part to analyze (e.g., 0 for the first part).
+        minimum: 0
+      measure_start:
+        type: integer
+        description: The starting measure number of the segment to analyze (inclusive).
+        minimum: 1
+      measure_end:
+        type: integer
+        description: The ending measure number of the segment to analyze (inclusive).
+        minimum: 1
+  returns_schema:
+    type: object
+    required:
+    - ok
+    - data
+    properties:
+      ok:
+        type: boolean
+        description: Whether the operation was successful.
+      data:
+        type: string
+        description: The result data or error message.

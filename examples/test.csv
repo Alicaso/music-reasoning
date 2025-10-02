@@ -1,0 +1,4 @@
+question_id,music_id,question,final_options,truth_letter
+1,1,"What is the form of this musical excerpt?","['Binary', 'Ternary', 'Rondo', 'Sonata']",A
+2,2,"Identify the cadence at measure 8.","['Perfect Authentic Cadence', 'Imperfect Authentic Cadence', 'Half Cadence', 'Plagal Cadence']",B
+3,3,"What is the key signature of this piece?","['C major', 'G major', 'D major', 'A major']",C

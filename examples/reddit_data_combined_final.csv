@@ -1,0 +1,4 @@
+question_id,music_id,question,final_options,truth_letter
+lyqb1v,lyqb1v,"What is the harmonic progression in measures 1-4?","['I-V-vi-IV', 'I-vi-IV-V', 'vi-IV-I-V', 'IV-I-V-vi']",A
+4b07zj,4b07zj,"Identify the melodic contour of the main theme.","['Ascending', 'Descending', 'Arch-shaped', 'Wave-like']",B
+eh9wd2,eh9wd2,"What is the time signature of this piece?","['4/4', '3/4', '2/4', '6/8']",C
